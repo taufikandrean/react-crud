@@ -54,21 +54,34 @@ const _renderCheckbox = (states, stateSetters) => {
   );
 };
 
-const _handleSubmitData = (states) => () => {
-  const { firstName, lastName, checkbox } = states;
+const _handleResetOnSubmit = (stateSetters) => {
+  const { setFirstName, setLastName, setCheckbox, setDisable } = stateSetters;
 
-  console.log('..._handleSubmitData - states', states);
+  Array.from(document.querySelectorAll('input')).forEach(
+    input => (input.value = emptyString)
+  );
+
+  setFirstName(emptyString);
+  setLastName(emptyString);
+  setCheckbox(false);
+  setDisable(true);
+};
+
+const _handleSubmitData = (states, stateSetters) => () => {
+  const { firstName, lastName, checkbox } = states;
 
   axios.post('https://619fb26b1ac52a0017ba4a09.mockapi.io/fakeData', {
     firstName, lastName, checkbox
   });
+
+  _handleResetOnSubmit(stateSetters);
 };
 
-const _renderSubmitButton = (states) => (
+const _renderSubmitButton = (states, stateSetters) => (
   <Button 
     type='submit'
     disabled={states.isDisabled}
-    onClick={_handleSubmitData(states)}
+    onClick={_handleSubmitData(states, stateSetters)}
   >
     Submit
   </Button>
@@ -79,7 +92,7 @@ const _renderForm = (states, stateSetters) => (
     {_renderFirstNameForm(stateSetters)}
     {_renderLastNameForm(stateSetters)}
     {_renderCheckbox(states, stateSetters)}
-    {_renderSubmitButton(states)}    
+    {_renderSubmitButton(states, stateSetters)}    
   </Form>
 );
 
